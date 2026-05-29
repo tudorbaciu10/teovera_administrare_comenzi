@@ -6,6 +6,7 @@ use App\Filament\Resources\OrderResource\Pages;
 use App\Models\Order;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -166,6 +167,10 @@ class OrderResource extends Resource
                         $record->update(['status' => 'livrata']);
                         Notification::make()->title('Status → Livrată')->success()->send();
                     }),
+
+                DeleteAction::make()
+                    ->visible(fn () => auth()->user()?->isAdmin() ?? false)
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 BulkAction::make('print_selected')
