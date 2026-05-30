@@ -1,226 +1,150 @@
-{{-- ════════════════════════════════════════════════════════════════
-     ECRANUL DE SUCCES — comanda a fost trimisă
-     ════════════════════════════════════════════════════════════════ --}}
-@if ($submitted && $order)
+<div>
 
-<div class="px-4 pt-6 space-y-4">
-
-    {{-- Banner succes --}}
-    <div class="bg-green-50 border border-green-300 rounded-xl p-4 flex items-start gap-3">
-        <svg class="w-6 h-6 text-green-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
-        <div>
-            <div class="font-semibold text-green-800">Comanda a fost trimisă!</div>
-            <div class="text-sm text-green-700">
-                {{ $order->data->format('d.m.Y') }}
-                @if($order->user)
-                    · {{ $order->user->name }}
-                @endif
-            </div>
+{{-- ── Header sticky ── --}}
+<header class="comanda-header">
+    <div class="comanda-header-top">
+        <span class="comanda-brand">Avicola-Teovera</span>
+        <div class="lang-toggle">
+            <a href="{{ route('lang.switch', 'ro') }}"
+               class="{{ app()->getLocale() === 'ro' ? 'active' : '' }}">RO</a>
+            <a href="{{ route('lang.switch', 'ru') }}"
+               class="{{ app()->getLocale() === 'ru' ? 'active' : '' }}">RU</a>
         </div>
     </div>
+    <div class="comanda-store">{{ $storeTitle }}</div>
+    <div class="comanda-meta">
+        {{ $store->route?->nume }} &mdash; {{ now()->format('d.m.Y') }}
+    </div>
+</header>
 
-    {{-- Rezumat produse --}}
-    <div class="bg-white rounded-xl shadow-sm divide-y divide-gray-100 overflow-hidden">
-        @foreach ($order->load('items.product.category')->items->sortBy('product.category.ordine_sortare') as $item)
-        <div class="flex justify-between items-center px-4 py-3">
-            <div>
-                <div class="text-sm font-medium">{{ $item->product->nume }}</div>
-                <div class="text-xs text-gray-400">{{ $item->product->category->nume }}</div>
+<div class="comanda-body">
+
+@if($submitted && $order)
+{{-- ══ ECRAN CONFIRMARE ═══════════════════════════════════════════════ --}}
+
+<div class="confirmare-card">
+    <div class="confirmare-icon">&#10003;</div>
+    <div class="confirmare-titlu">{{ __('comanda.confirmare_titlu') }}</div>
+    <div class="confirmare-text">{{ __('comanda.confirmare_text') }}</div>
+
+    <div class="confirmare-produse">
+        @php
+            $locale = app()->getLocale();
+            $byCategory = $order->items->sortBy([
+                fn ($a, $b) => $a->product->category->ordine_sortare <=> $b->product->category->ordine_sortare,
+                fn ($a, $b) => $a->product->{'nume_'.$locale} <=> $b->product->{'nume_'.$locale},
+            ])->groupBy(fn ($item) => $item->product->category->ordine_sortare.'|'.$item->product->category->{'nume_'.$locale});
+        @endphp
+
+        @foreach($byCategory as $catKey => $items)
+            <div class="confirmare-cat">{{ explode('|', $catKey)[1] ?? $catKey }}</div>
+            @foreach($items as $item)
+            <div class="confirmare-item">
+                <span>{{ $item->product->{'nume_'.$locale} }}</span>
+                <strong>{{ rtrim(rtrim(number_format($item->cantitate, 3, '.', ''), '0'), '.') }} {{ __('comanda.'.$item->product->unitate) }}</strong>
             </div>
-            <div class="font-semibold text-brand tabular-nums">
-                {{ rtrim(rtrim(number_format((float)$item->cantitate, 3, '.', ''), '0'), '.') }}
-                <span class="text-xs font-normal text-gray-500">{{ $item->product->unitate }}</span>
-            </div>
-        </div>
+            @endforeach
         @endforeach
     </div>
 
-    @if ($order->observatii)
-    <div class="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-sm text-yellow-800">
-        <span class="font-medium">Obs:</span> {{ $order->observatii }}
-    </div>
-    @endif
-
-    {{-- Buton editare (dacă nu am depășit cut-off-ul) --}}
-    @if (! $cutoffPassed)
-    <button wire:click="editOrder"
-            class="w-full py-3 rounded-xl border-2 border-brand text-brand font-semibold text-sm
-                   active:bg-red-50 transition-colors">
-        Modifică comanda
+    @if(!$cutoffPassed)
+    <button wire:click="editOrder" class="btn-edit">
+        {{ __('comanda.btn_editeaza') }}
     </button>
-    @else
-    <p class="text-center text-xs text-gray-400">Termenul de editare a expirat.</p>
-    @endif
-
-</div>
-
-{{-- ════════════════════════════════════════════════════════════════
-     BLOCAT — cut-off depășit, nicio comandă azi
-     ════════════════════════════════════════════════════════════════ --}}
-@elseif ($cutoffPassed && ! $order)
-
-<div class="px-4 pt-10 text-center space-y-4">
-    <div class="text-5xl">🔒</div>
-    <h2 class="text-lg font-semibold text-gray-700">Termenul a expirat</h2>
-    <p class="text-sm text-gray-500">
-        Comanda pentru această rută nu mai poate fi trimisă astăzi.<br>
-        Contactează operatorul dacă ai o urgență.
-    </p>
-    @if ($store->route)
-    <p class="text-xs text-gray-400">
-        Cut-off: {{ $store->route->zi_cutoff }} ora {{ substr($store->route->ora_cutoff, 0, 5) }}
-    </p>
     @endif
 </div>
 
-{{-- ════════════════════════════════════════════════════════════════
-     FORMULAR DE COMANDĂ
-     ════════════════════════════════════════════════════════════════ --}}
+@elseif($cutoffPassed && !$order)
+{{-- ══ CUTOFF BLOCAT (fără comandă existentă) ═══════════════════════ --}}
+
+<div class="cutoff-card">
+    <div class="cutoff-icon">&#9200;</div>
+    <div class="cutoff-titlu">{{ __('comanda.cutoff_depasit') }}</div>
+    <div class="cutoff-text">
+        @if($store->route?->zi_cutoff && $store->route?->ora_cutoff)
+            {{ __('comanda.cutoff_mesaj', [
+                'zi'  => ucfirst($store->route->zi_cutoff),
+                'ora' => substr($store->route->ora_cutoff, 0, 5),
+            ]) }}
+        @endif
+    </div>
+</div>
+
 @else
+{{-- ══ FORMULAR COMANDĂ ════════════════════════════════════════════════ --}}
 
-<div class="space-y-0">
+@if($errorMsg)
+<div class="error-msg">{{ $errorMsg }}</div>
+@endif
 
-    {{-- Info magazin + rută --}}
-    <div class="px-4 pt-4 pb-2 bg-white shadow-sm mb-3">
-        <p class="text-xs text-gray-500">
-            {{ $store->localitate }}
-            @if($store->route)
-                · <span class="text-brand font-medium">{{ $store->route->nume }}</span>
-            @endif
-        </p>
-        <p class="text-xs text-gray-400 mt-0.5">
-            Data comenzii: <span class="font-medium">{{ now()->format('d.m.Y') }}</span>
-        </p>
-    </div>
+<form wire:submit.prevent="submit">
 
-    {{-- Erori globale --}}
-    @if ($errorMsg)
-    <div class="mx-4 mb-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
-        {{ $errorMsg }}
-    </div>
-    @endif
+    {{-- Produse grupate pe categorie --}}
+    @foreach($categories as $category)
+    @php $locale = app()->getLocale(); @endphp
+    <div class="cat-section">
+        <div class="cat-title">{{ $category->{'nume_'.$locale} }}</div>
 
-    {{-- ── CATALOG ── --}}
-    @foreach ($categories as $category)
-
-    <div class="mb-1">
-        <div class="px-4 py-2 bg-gray-100 sticky top-[60px] z-[5]">
-            <span class="text-xs font-bold uppercase tracking-widest text-gray-500">
-                {{ $category->nume }}
-            </span>
-        </div>
-
-        <div class="bg-white divide-y divide-gray-100">
-        @foreach ($category->products as $product)
-        <div class="flex items-center justify-between px-4 py-3 gap-3">
-
-            <div class="flex-1 min-w-0">
-                <div class="text-sm font-medium leading-snug truncate">{{ $product->nume }}</div>
-                <div class="text-xs text-gray-400">{{ $product->unitate }}</div>
+        @foreach($category->products as $product)
+        @php $qty = $quantities[(string)$product->id] ?? ''; @endphp
+        <div class="product-row {{ is_numeric($qty) && (float)$qty > 0 ? 'has-qty' : '' }}">
+            <div style="flex:1">
+                <div class="product-name">{{ $product->{'nume_'.$locale} }}</div>
+                <div class="product-unit">{{ __('comanda.'.$product->unitate) }}</div>
             </div>
-
-            <div class="flex items-center gap-1 shrink-0">
-                {{-- Buton – --}}
-                @php $step = $product->unitate === 'kg' ? 0.5 : 1; @endphp
+            <div class="qty-wrap">
                 <button type="button"
-                        wire:click="decrementQty('{{ $product->id }}', {{ $step }})"
-                        class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center
-                               text-lg leading-none active:bg-gray-200 touch-manipulation select-none">
-                    −
-                </button>
-
-                {{-- Input cantitate --}}
-                <input
-                    type="number"
-                    min="0"
-                    step="{{ $step }}"
-                    inputmode="decimal"
-                    wire:model.lazy="quantities.{{ $product->id }}"
-                    placeholder="0"
-                    class="w-16 text-center border border-gray-200 rounded-lg py-1.5 text-sm font-semibold
-                           focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand
-                           {{ (float)($quantities[$product->id] ?? 0) > 0 ? 'border-brand bg-red-50 text-brand' : '' }}"
-                >
-
-                {{-- Buton + --}}
+                        class="qty-btn"
+                        wire:click="decrementQty('{{ $product->id }}', {{ $product->unitate === 'kg' ? 0.5 : 1 }})">&#8722;</button>
+                <input type="number"
+                       class="qty-input"
+                       wire:model.lazy="quantities.{{ $product->id }}"
+                       step="{{ $product->unitate === 'kg' ? '0.5' : '1' }}"
+                       min="0"
+                       placeholder="0">
                 <button type="button"
-                        wire:click="incrementQty('{{ $product->id }}', {{ $step }})"
-                        class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center
-                               text-lg leading-none active:bg-brand-dark touch-manipulation select-none">
-                    +
-                </button>
+                        class="qty-btn"
+                        wire:click="incrementQty('{{ $product->id }}', {{ $product->unitate === 'kg' ? 0.5 : 1 }})">+</button>
             </div>
-
         </div>
         @endforeach
-        </div>
     </div>
-
     @endforeach
 
-    {{-- ── FOOTER FORMULAR ── --}}
-    <div class="px-4 pt-4 pb-6 space-y-4 bg-white mt-3 shadow-sm">
-
-        {{-- Persoana care trimite --}}
-        <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Persoana care trimite *</label>
-            <select wire:model="userId"
-                    class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm
-                           focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand
-                           bg-white {{ !$userId ? 'text-gray-400' : 'text-gray-900' }}">
-                <option value="">— selectează —</option>
-                @foreach ($vanzatoare as $v)
-                    <option value="{{ $v->id }}">{{ $v->name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        {{-- Observații --}}
-        <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Observații (opțional)</label>
-            <textarea wire:model.lazy="observatii"
-                      rows="2"
-                      placeholder="Mențiuni speciale..."
-                      class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none
-                             focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"></textarea>
-        </div>
-
-        {{-- Rezumat produse selectate --}}
-        @php
-            $selected = collect($quantities)->filter(fn($q) => is_numeric($q) && (float)$q > 0)->count();
-        @endphp
-        @if ($selected > 0)
-        <p class="text-xs text-gray-500 text-center">
-            {{ $selected }} {{ $selected === 1 ? 'produs selectat' : 'produse selectate' }}
-        </p>
-        @endif
-
-        {{-- Buton TRIMITE --}}
-        <button wire:click="submit"
-                wire:loading.attr="disabled"
-                class="w-full py-4 rounded-2xl bg-brand text-white font-bold text-base shadow
-                       active:bg-red-800 disabled:opacity-60 transition-all touch-manipulation">
-            <span wire:loading.remove>
-                @if ($order)
-                    Actualizează comanda
-                @else
-                    Trimite comanda
-                @endif
-            </span>
-            <span wire:loading class="flex items-center justify-center gap-2">
-                <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                    <path class="opacity-75" fill="currentColor"
-                          d="M4 12a8 8 0 018-8v8H4z"/>
-                </svg>
-                Se trimite…
-            </span>
-        </button>
-
+    {{-- Rezumat produse selectate --}}
+    <div class="selected-summary">
+        {{ __('comanda.produse_selectate', ['n' => '<strong id="selectedCount">0</strong>']) }}
     </div>
 
-</div>
+    {{-- Vânzătoare --}}
+    <div class="comanda-section">
+        <label>{{ __('comanda.selecteaza_vanzator') }}</label>
+        <select wire:model="userId">
+            <option value="">&#8212; {{ __('comanda.selecteaza_vanzator') }} &#8212;</option>
+            @foreach($vanzatoare as $v)
+                <option value="{{ $v->id }}">{{ $v->name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- Observații --}}
+    <div class="comanda-section">
+        <label>{{ __('comanda.observatii') }}</label>
+        <textarea wire:model="observatii"
+                  rows="3"
+                  placeholder="{{ __('comanda.observatii_ph') }}"></textarea>
+    </div>
+
+    {{-- Submit --}}
+    <button type="submit" class="btn-submit" wire:loading.attr="disabled">
+        <span wire:loading.remove>{{ __('comanda.btn_trimite') }}</span>
+        <span wire:loading>&#8230;</span>
+    </button>
+
+</form>
 
 @endif
+
+</div>{{-- /comanda-body --}}
+
+</div>

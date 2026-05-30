@@ -1,0 +1,192 @@
+/* print.css — stiluri printare A4 Teovera */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+}
+
+/* ── Buton print (ascuns la printare) ── */
+.no-print { margin-bottom: 16px; }
+
+@media print {
+    .no-print { display: none !important; }
+    body { font-size: 10pt; }
+}
+
+/* ── Pagină comandă ── */
+.order-page {
+    max-width: 190mm;
+    margin: 0 auto;
+    padding: 10mm;
+}
+
+@media print {
+    .order-page {
+        padding: 6mm;
+        page-break-after: always;
+    }
+
+    .order-page:last-child {
+        page-break-after: avoid;
+    }
+}
+
+/* ── Header ── */
+.print-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #000;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.print-brand {
+    font-size: 14pt;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+
+.print-brand-sub {
+    font-size: 9pt;
+    color: #555;
+    margin-top: 2px;
+}
+
+.print-order-nr {
+    text-align: right;
+    font-size: 10pt;
+}
+
+.print-order-nr strong {
+    font-size: 13pt;
+}
+
+/* ── Grid de informații ── */
+.print-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px 12px;
+    background: #fafafa;
+}
+
+@media print {
+    .print-info-grid { background: #fafafa; }
+}
+
+.print-info-label {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #666;
+}
+
+.print-info-value {
+    font-size: 11pt;
+    font-weight: 600;
+    margin-top: 1px;
+}
+
+/* ── Tabele produse ── */
+.print-category {
+    font-size: 9pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #444;
+    margin: 14px 0 5px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 3px;
+}
+
+.print-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10.5pt;
+    margin-bottom: 4px;
+}
+
+.print-table thead th {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 5px 8px;
+    text-align: left;
+    font-size: 9pt;
+    font-weight: 700;
+}
+
+.print-table tbody td {
+    border: 1px solid #ddd;
+    padding: 5px 8px;
+    vertical-align: middle;
+}
+
+.print-table tbody tr:nth-child(even) td {
+    background: #f9f9f9;
+}
+
+@media print {
+    .print-table tbody tr:nth-child(even) td {
+        background: #f9f9f9;
+    }
+}
+
+.qty-cell {
+    font-weight: 700;
+    text-align: right;
+    width: 80px;
+}
+
+.unit-cell {
+    color: #555;
+    width: 50px;
+}
+
+/* ── Observații ── */
+.print-obs {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 8px 10px;
+    margin-top: 12px;
+    font-size: 10pt;
+}
+
+.print-obs-label {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+/* ── Semnături ── */
+.print-signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.print-sig-line {
+    border-top: 1px solid #000;
+    padding-top: 4px;
+    font-size: 8.5pt;
+    color: #444;
+}
+
+/* ── Bulk (mai multe comenzi) ── */
+.bulk-header {
+    font-size: 10pt;
+    color: #555;
+    margin-bottom: 12px;
+}

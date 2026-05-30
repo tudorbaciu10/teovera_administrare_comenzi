@@ -11,12 +11,12 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Admin și operator pentru Filament
         User::create([
             'name'     => 'Administrator',
             'email'    => 'admin@teovera.md',
             'password' => Hash::make('admin1234'),
             'rol'      => 'admin',
+            'lang'     => 'ro',
         ]);
 
         User::create([
@@ -24,6 +24,7 @@ class UserSeeder extends Seeder
             'email'    => 'operator@teovera.md',
             'password' => Hash::make('operator1234'),
             'rol'      => 'operator',
+            'lang'     => 'ro',
         ]);
 
         // Vânzătoare demo: câte 1-2 per magazin

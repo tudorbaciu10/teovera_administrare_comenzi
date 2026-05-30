@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'titlu'               => 'Comandă',
+    'salut'               => 'Bună ziua!',
+    'magazin'             => 'Magazin',
+    'ruta'                => 'Rută',
+    'data'                => 'Data',
+    'selecteaza_vanzator' => 'Selectează vânzătoarea',
+    'observatii'          => 'Observații (opțional)',
+    'observatii_ph'       => 'Ex: livrare după-amiază, intrare din spate...',
+    'btn_trimite'         => 'Trimite comanda',
+    'btn_editeaza'        => 'Modifică comanda',
+    'confirmare_titlu'    => 'Comanda a fost trimisă!',
+    'confirmare_text'     => 'Comanda ta a fost înregistrată cu succes.',
+    'produse_selectate'   => ':n produs(e) selectat(e)',
+    'cutoff_depasit'      => 'Termenul de trimitere a comenzii a expirat.',
+    'cutoff_mesaj'        => 'Comenzile pentru această rută se trimit până :zi la :ora.',
+    'fara_comanda_azi'    => 'Nu există o comandă activă pentru astăzi.',
+    'eroare_vanzator'     => 'Selectează persoana care trimite comanda.',
+    'eroare_produse'      => 'Adaugă cel puțin un produs în comandă.',
+    'kg'                  => 'kg',
+    'buc'                 => 'buc',
+    'limba_ro'            => 'RO',
+    'limba_ru'            => 'RU',
+];

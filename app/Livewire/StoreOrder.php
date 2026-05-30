@@ -33,7 +33,7 @@ class StoreOrder extends Component
             ->firstOrFail();
 
         // Initializăm toate cantitățile la '' (gol = nu se comandă)
-        $products = Category::with(['products' => fn ($q) => $q->where('activ', true)->orderBy('nume')])
+        $products = Category::with(['products' => fn ($q) => $q->where('activ', true)->orderBy('nume_ro')])
             ->orderBy('ordine_sortare')
             ->get()
             ->flatMap(fn ($cat) => $cat->products);
@@ -181,7 +181,7 @@ class StoreOrder extends Component
     public function render(): View
     {
         $categories = Category::with([
-            'products' => fn ($q) => $q->where('activ', true)->orderBy('nume'),
+            'products' => fn ($q) => $q->where('activ', true)->orderBy('nume_ro'),
         ])
             ->orderBy('ordine_sortare')
             ->get();

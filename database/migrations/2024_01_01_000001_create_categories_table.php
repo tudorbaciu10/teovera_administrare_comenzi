@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('nume');
+            $table->string('nume_ro');
+            $table->string('nume_ru');
             $table->unsignedTinyInteger('ordine_sortare')->default(0);
             $table->timestamps();
         });

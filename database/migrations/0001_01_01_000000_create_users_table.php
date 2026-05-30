@@ -15,6 +15,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->enum('rol', ['admin', 'operator', 'vanzatoare'])->default('vanzatoare');
+            $table->enum('lang', ['ro', 'ru'])->default('ro');
             $table->unsignedBigInteger('store_id')->nullable();
             $table->string('token_acces', 64)->nullable()->unique();
             $table->rememberToken();

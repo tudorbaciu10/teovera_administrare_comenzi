@@ -10,29 +10,29 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        $refrigerate = Category::where('nume', 'Refrigerate')->first();
-        $congelate   = Category::where('nume', 'Congelate')->first();
-        $marinate    = Category::where('nume', 'Marinate')->first();
+        $refrigerate = Category::where('nume_ro', 'Refrigerate')->first();
+        $congelate   = Category::where('nume_ro', 'Congelate')->first();
+        $marinate    = Category::where('nume_ro', 'Marinate')->first();
 
         $products = [
             // Refrigerate
-            ['nume' => 'Pulpă întreagă',  'unitate' => 'kg', 'category_id' => $refrigerate->id],
-            ['nume' => 'Piept',            'unitate' => 'kg', 'category_id' => $refrigerate->id],
-            ['nume' => 'Aripi',            'unitate' => 'kg', 'category_id' => $refrigerate->id],
-            ['nume' => 'Gambe',            'unitate' => 'kg', 'category_id' => $refrigerate->id],
-            ['nume' => 'Șolduri',          'unitate' => 'kg', 'category_id' => $refrigerate->id],
-            ['nume' => 'Carcasă întreagă', 'unitate' => 'kg', 'category_id' => $refrigerate->id],
+            ['nume_ro' => 'Pulpă întreagă',  'nume_ru' => 'Целое бедро',          'unitate' => 'kg', 'category_id' => $refrigerate->id],
+            ['nume_ro' => 'Piept',            'nume_ru' => 'Грудка',               'unitate' => 'kg', 'category_id' => $refrigerate->id],
+            ['nume_ro' => 'Aripi',            'nume_ru' => 'Крылышки',             'unitate' => 'kg', 'category_id' => $refrigerate->id],
+            ['nume_ro' => 'Gambe',            'nume_ru' => 'Голень',               'unitate' => 'kg', 'category_id' => $refrigerate->id],
+            ['nume_ro' => 'Șolduri',          'nume_ru' => 'Бедро',                'unitate' => 'kg', 'category_id' => $refrigerate->id],
+            ['nume_ro' => 'Carcasă întreagă', 'nume_ru' => 'Тушка целая',          'unitate' => 'kg', 'category_id' => $refrigerate->id],
 
             // Congelate
-            ['nume' => 'Pulpă congelată',   'unitate' => 'kg', 'category_id' => $congelate->id],
-            ['nume' => 'Piept congelat',     'unitate' => 'kg', 'category_id' => $congelate->id],
-            ['nume' => 'Carcasă congelată',  'unitate' => 'kg', 'category_id' => $congelate->id],
+            ['nume_ro' => 'Pulpă congelată',   'nume_ru' => 'Бедро замороженное',  'unitate' => 'kg', 'category_id' => $congelate->id],
+            ['nume_ro' => 'Piept congelat',     'nume_ru' => 'Грудка замороженная', 'unitate' => 'kg', 'category_id' => $congelate->id],
+            ['nume_ro' => 'Carcasă congelată',  'nume_ru' => 'Тушка замороженная',  'unitate' => 'kg', 'category_id' => $congelate->id],
 
             // Marinate
-            ['nume' => 'Pulpă dezosată marinată', 'unitate' => 'kg', 'category_id' => $marinate->id],
-            ['nume' => 'Aripi marinate',           'unitate' => 'kg', 'category_id' => $marinate->id],
-            ['nume' => 'Gambe marinate',           'unitate' => 'kg', 'category_id' => $marinate->id],
-            ['nume' => 'Șolduri marinate',         'unitate' => 'kg', 'category_id' => $marinate->id],
+            ['nume_ro' => 'Pulpă dezosată marinată', 'nume_ru' => 'Бедро б/к маринованное', 'unitate' => 'kg', 'category_id' => $marinate->id],
+            ['nume_ro' => 'Aripi marinate',           'nume_ru' => 'Крылышки маринованные',  'unitate' => 'kg', 'category_id' => $marinate->id],
+            ['nume_ro' => 'Gambe marinate',           'nume_ru' => 'Голень маринованная',     'unitate' => 'kg', 'category_id' => $marinate->id],
+            ['nume_ro' => 'Șolduri marinate',         'nume_ru' => 'Бедро маринованное',      'unitate' => 'kg', 'category_id' => $marinate->id],
         ];
 
         foreach ($products as $p) {
