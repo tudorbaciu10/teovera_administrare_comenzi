@@ -20,8 +20,11 @@ class OrderController extends Controller
         $query = Order::with(['store', 'route', 'user', 'items.product.category'])
             ->orderBy('created_at', 'desc');
 
+        $selectedRoute = null;
+
         if ($request->filled('route_id')) {
-            $query->where('route_id', $request->route_id);
+            $query->whereHas('store', fn ($q) => $q->where('route_id', $request->route_id));
+            $selectedRoute = DeliveryRoute::with('stores')->find($request->route_id);
         }
 
         if ($request->filled('data')) {
@@ -34,7 +37,7 @@ class OrderController extends Controller
 
         $orders = $query->get();
 
-        return view('orders.index', compact('orders', 'routes'));
+        return view('orders.index', compact('orders', 'routes', 'selectedRoute'));
     }
 
     public function show(Order $order): View
@@ -86,8 +89,7 @@ class OrderController extends Controller
     {
         $orders = Order::with(['store', 'route', 'user', 'items.product.category'])
             ->orderBy('data', 'desc')
-            ->orderBy('route_id')
-            ->when($request->filled('route_id'), fn ($q) => $q->where('route_id', $request->route_id))
+            ->when($request->filled('route_id'), fn ($q) => $q->whereHas('store', fn ($s) => $s->where('route_id', $request->route_id)))
             ->when($request->filled('data'),     fn ($q) => $q->where('data', $request->data))
             ->when($request->filled('status'),   fn ($q) => $q->where('status', $request->status))
             ->get();
@@ -100,11 +102,10 @@ class OrderController extends Controller
     public function exportCsv(Request $request): Response
     {
         $query = Order::with(['store', 'route', 'user', 'items.product'])
-            ->orderBy('data', 'desc')
-            ->orderBy('route_id');
+            ->orderBy('data', 'desc');
 
         if ($request->filled('route_id')) {
-            $query->where('route_id', $request->route_id);
+            $query->whereHas('store', fn ($q) => $q->where('route_id', $request->route_id));
         }
         if ($request->filled('data')) {
             $query->where('data', $request->data);

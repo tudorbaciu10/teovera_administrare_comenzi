@@ -139,6 +139,7 @@ class StoreOrder extends Component
                 $this->order->items()->delete();
                 $this->order->update([
                     'user_id'    => $this->userId,
+                    'route_id'   => $this->store->route_id,
                     'observatii' => $this->observatii ?: null,
                     'status'     => 'trimisa',
                 ]);

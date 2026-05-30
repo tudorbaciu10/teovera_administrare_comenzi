@@ -190,3 +190,180 @@ body {
     color: #555;
     margin-bottom: 12px;
 }
+
+/* =============================================================
+   Stiluri print pe rută (route.blade.php) — ultra-compact
+   ============================================================= */
+
+body.print-page {
+    margin: 0;
+    padding: 16px;
+    font-family: Arial, "Segoe UI", sans-serif;
+    font-size: 10px;
+    color: #111;
+    background: #f5f5f5;
+}
+
+.print-toolbar {
+    margin-bottom: 14px;
+    display: flex;
+    gap: 8px;
+}
+
+.print-toolbar .btn-print,
+.print-toolbar .btn-pdf,
+.print-toolbar .btn-close {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #111;
+    background: #fff;
+}
+
+.print-toolbar .btn-print { background: #2563eb; color: #fff; border-color: #2563eb; }
+.print-toolbar .btn-pdf   { background: #059669; color: #fff; border-color: #059669; }
+
+.doc-title {
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 1.5px solid #000;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+}
+
+.order-block {
+    margin-bottom: 6px;
+}
+
+.order-head-main {
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 1px;
+}
+
+.order-head-sub {
+    font-size: 9px;
+    color: #444;
+    margin-bottom: 3px;
+}
+
+.order-counter { float: right; color: #888; }
+
+/* ── Tabel produse ── */
+.item-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+
+.item-table th,
+.item-table td {
+    padding: 1px 4px;
+    border: 1px solid #aaa;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+.item-table thead th {
+    background: #eee;
+    text-align: left;
+    font-size: 9px;
+    text-transform: uppercase;
+}
+
+.cat-row td {
+    background: #f2f2f2;
+    font-weight: bold;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: .2px;
+}
+
+.col-qty { text-align: right; font-weight: bold; width: 55px; }
+.col-um  { width: 40px; color: #555; }
+
+.order-note { font-size: 9px; margin: 2px 0 3px; }
+
+/* ── 2 coloane (tabel, compatibil dompdf) ── */
+.item-table-2col {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 2px;
+}
+
+.col-half {
+    width: 50%;
+    vertical-align: top;
+}
+
+.col-half-left {
+    padding-right: 4px;
+    border-right: 1px dotted #bbb;
+}
+
+.col-half-right {
+    padding-left: 4px;
+}
+
+/* ── Separator între comenzi ── */
+.order-separator {
+    border: none;
+    border-bottom: 1.5px dashed #333;
+    margin: 6px 0;
+}
+
+/* ── Bloc semnături ── */
+.signatures {
+    margin-top: 16px;
+    display: flex;
+    gap: 24px;
+}
+
+.signatures .sign-cell {
+    flex: 1;
+    border-top: 1px solid #000;
+    padding-top: 4px;
+    font-size: 10px;
+    text-align: center;
+}
+
+/* =============================================================
+   REGULI DE PRINTARE — ultra-compact, 6-7 magazine / A4
+   ============================================================= */
+@media print {
+    @page { size: A4; margin: 8mm 10mm; }
+
+    .no-print { display: none !important; }
+
+    body.print-page {
+        padding: 0 !important;
+        background: #fff !important;
+        font-size: 10px !important;
+    }
+
+    .item-table th,
+    .item-table td {
+        padding: 1px 4px !important;
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+    }
+
+    .order-block {
+        page-break-after: auto;
+        page-break-inside: avoid;
+    }
+
+    .item-row,
+    .cat-row { page-break-inside: avoid; }
+
+    .item-table thead { display: table-header-group; }
+
+    .order-separator { margin: 5px 0; }
+
+    .signatures { margin-top: 12px; }
+}

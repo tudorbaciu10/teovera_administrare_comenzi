@@ -48,9 +48,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('users',      UserController::class)->except(['show']);
     });
 
-    // Printare
-    Route::get('/print/order/{order}', [PrintController::class, 'singleOrder'])->name('print.order');
-    Route::get('/print/orders',        [PrintController::class, 'bulkOrders'])->name('print.orders.bulk');
+    // Printare comandă individuală / bulk
+    Route::get('/print/order/{order}',     [PrintController::class, 'singleOrder'])->name('print.order');
+    Route::get('/print/orders',            [PrintController::class, 'bulkOrders'])->name('print.orders.bulk');
     Route::get('/print/order/{order}/pdf', [PrintController::class, 'singleOrderPdf'])->name('print.order.pdf');
     Route::get('/print/orders/pdf',        [PrintController::class, 'bulkOrdersPdf'])->name('print.orders.pdf');
+
+    // Printare pe rută (flux continuu)
+    Route::get('/print/route/{route}',     [PrintController::class, 'printRoute'])->name('print.route');
+    Route::get('/print/route/{route}/pdf', [PrintController::class, 'exportRoutePdf'])->name('print.route.pdf');
 });

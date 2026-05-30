@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Route as DeliveryRoute;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
@@ -44,6 +45,49 @@ class PrintController extends Controller
 
         return $pdf->download('comenzi-'.date('Y-m-d').'.pdf');
     }
+
+    // ── Print pe rută (browser + PDF) ────────────────────────────────────────
+
+    private function loadRouteOrders(DeliveryRoute $route, string $date)
+    {
+        return Order::with(['store', 'route', 'user', 'items.product.category'])
+            ->join('stores', 'stores.id', '=', 'orders.store_id')
+            ->where('stores.route_id', $route->id)
+            ->whereDate('orders.data', $date)
+            ->orderBy('stores.localitate')
+            ->orderBy('orders.id')
+            ->select('orders.*')
+            ->get();
+    }
+
+    public function printRoute(Request $request, DeliveryRoute $route): View
+    {
+        $date   = $request->query('data', Carbon::today()->toDateString());
+        $orders = $this->loadRouteOrders($route, $date);
+        $lang   = app()->getLocale();
+
+        return view('print.route', compact('route', 'orders', 'lang') + ['printDate' => $date]);
+    }
+
+    public function exportRoutePdf(Request $request, DeliveryRoute $route): Response
+    {
+        $date   = $request->query('data', Carbon::today()->toDateString());
+        $orders = $this->loadRouteOrders($route, $date);
+        $lang   = app()->getLocale();
+
+        $pdf = Pdf::loadView('print.route-pdf', compact('route', 'orders', 'lang') + ['printDate' => $date])
+            ->setPaper('a4', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'DejaVu Sans')
+            ->setOption('isFontSubsettingEnabled', true);
+
+        $fileName = 'comenzi-' . str()->slug($route->nume) . '-' . $date . '.pdf';
+
+        return $pdf->stream($fileName);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
 
     private function buildOrdersQuery(Request $request)
     {
